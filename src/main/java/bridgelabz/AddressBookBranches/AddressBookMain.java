@@ -1,12 +1,14 @@
 package bridgelabz.AddressBookBranches;
 
-
-
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Hello world!
@@ -20,9 +22,31 @@ public class AddressBookMain
 	/**
 	 * nameToContact, the map from name to ContactDetails of a person
 	 */
+	/**
+	 * name, the name of the AddressBook
+	 */
+	/**
+	 * nameToAddressBook, the dictionary for storing all the AddressBooks
+	 */
+	private String name;
 	private List<ContactDetails> contactBook = new ArrayList<ContactDetails>();
 	private Map<String,ContactDetails> nameToContact = new HashMap<String,ContactDetails>();
-	
+	private static Dictionary<String, AddressBookMain> nameToAddressBook = new Hashtable<String, AddressBookMain>(); 
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * @return ContactDetails, returns object of type ContactDetails after taking i/p from user
 	 */
@@ -68,13 +92,41 @@ public class AddressBookMain
 			System.out.println("No contacts present in the address book");
 			return;
 		}
-		System.out.println("The contact details are as follows:");
+		System.out.println("The contact details for addressbook "+this.getName()+" are as follows:");
 		for(int i=0;i <contactBook.size();i++) {
-			System.out.println("\n"+"Contact No:"+ (i+1));
+//			System.out.println("Name of Address book: " + this.name);
+			System.out.println("\nContact No:"+ (i+1));
 			System.out.println(contactBook.get(i));
 		}
 	}
 	
+	
+	private static void printAllAddressBooks() {
+		Enumeration<String> keys = nameToAddressBook.keys();
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			nameToAddressBook.get(key).printAddressBook();
+		}
+	}
+	
+	private static void getContactsForAddressBooks() {
+		Scanner sc= new Scanner(System.in);
+		Enumeration<String> keys = nameToAddressBook.keys();
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			while(true) {
+				System.out.println("Select "
+						+ "\n1. Adding contact details"
+						+ "\n2. Exit, done adding contacts"
+						+ "\n to the addressbook : " + key);
+				int addContact = sc.nextInt();
+				sc.nextLine();
+				if( addContact == 2 )
+					break;
+			nameToAddressBook.get(key).addContactDetails(getContactDetails());
+			}
+		}
+	}
 	
 	/**
 	 * deleteThrName(), deleting a person's ContactDetails by specifying name
@@ -108,7 +160,6 @@ public class AddressBookMain
 	 * editContactDetails(), Provides an option for editing a person's details 
 	 * by specifying the name
 	 */
-	
 	private void editContactDetails() {
 		Scanner sc= new Scanner(System.in);
 //		char c='N';
@@ -192,27 +243,43 @@ public class AddressBookMain
 		
 	}
 	
+	
 	/**
-     * @param addressBook, an AddressBook for storing ContactDetails
+	 * @return AddressBookMainUC5, returns an Addressbook with only a name
+	 */
+	private static AddressBookMain getAddressBook() {
+		AddressBookMain addressBookA = new AddressBookMain();
+		Scanner sc= new Scanner(System.in);
+		System.out.println("Enter the name for the addressbook");
+		String name = sc.nextLine();
+		addressBookA.setName(name);
+		nameToAddressBook.put(name, addressBookA);
+		return addressBookA;
+//        addressBookA.addContactDetails(getContactDetails());
+	}
+	
+	/**
+     * @param addressBookB, an AddressBook for storing ContactDetails
      */
-    public static void main( String[] args )
-    {
+	/**
+     * @param addressBookA, an AddressBook for storing ContactDetails
+     */
+    public static void main( String[] args ){
     	Scanner sc = new Scanner(System.in);
         System.out.println( "Welcome to Address Book Program" );
-        AddressBookMain addressBook = new AddressBookMain();
-        while(true)
-        {
-        	System.out.println("Select \n1. For adding details \n2. Exit, If all contacts added");
-        	int input = sc.nextInt();
+        while(true){
+        	System.out.println("Select \n1. Adding another addressbook \n2. Exit, if all addressbooks added");
+        	int another = sc.nextInt();
         	sc.nextLine();
-        	if(input == 2)
+        	if( another == 2 )
         		break;
-        	addressBook.addContactDetails(getContactDetails());
-        	
+        	AddressBookMain addressBookB = getAddressBook();
         }
-//        addressBook.addContactDetails(getContactDetails());
-        addressBook.editContactDetails();
-        addressBook.deleteThrName();
-        addressBook.printAddressBook();   
-    }
+        getContactsForAddressBooks();
+//        addressBook.editContactDetails();
+//        addressBook.deleteThrName();
+        printAllAddressBooks();
+	}
+		
 }
+
