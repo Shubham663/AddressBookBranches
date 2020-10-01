@@ -33,6 +33,9 @@ public class AddressBookMain
 	private List<ContactDetails> contactBook = new ArrayList<ContactDetails>();
 	private Map<String,ContactDetails> nameToContact = new HashMap<String,ContactDetails>();
 	private static Dictionary<String, AddressBookMain> nameToAddressBook = new Hashtable<String, AddressBookMain>(); 
+	private static Map<String,List<ContactDetails>> cityToContacts = new HashMap<String,List<ContactDetails>>();
+	private static Map<String,List<ContactDetails>> stateToContacts = new HashMap<String,List<ContactDetails>>();
+	
 	/**
 	 * @return the name
 	 */
@@ -99,6 +102,22 @@ public class AddressBookMain
 	private void addContactDetails(ContactDetails contactDetails) {
 		if(this.duplicateFound(contactDetails))
 			return;
+		if(cityToContacts.containsKey(contactDetails.getCity()))
+				cityToContacts.get(contactDetails.getCity()).add(contactDetails);
+		else
+		{
+			List<ContactDetails> contactDetailsList = new ArrayList<ContactDetails>();
+			contactDetailsList.add(contactDetails);
+			cityToContacts.put(contactDetails.getCity(), contactDetailsList);
+		}
+		if(stateToContacts.containsKey(contactDetails.getState()))
+			stateToContacts.get(contactDetails.getState()).add(contactDetails);
+		else
+		{
+			List<ContactDetails> contactDetailsList = new ArrayList<ContactDetails>();
+			contactDetailsList.add(contactDetails);
+			cityToContacts.put(contactDetails.getState(), contactDetailsList);
+		}
 		contactBook.add(contactDetails);
 		nameToContact.put(name, contactDetails);
 	}
@@ -279,9 +298,12 @@ public class AddressBookMain
 	
 	private static void searchCity() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Select \n1. for searching person in city\2. for exiting");
+		System.out.println("Select \n1. for searching person in city"
+				+ "\n2. for exiting");
 		int proceed = sc.nextInt();
 		sc.nextLine();
+		if(proceed == 2)
+			return;
 		System.out.println("Enter the first name of person");
 		String fName = sc.nextLine();
 		System.out.println("Enter the last name of person");
@@ -302,8 +324,11 @@ public class AddressBookMain
 	}
 	private static void searchState() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Select \n1. for searching person in city\n2. for exiting");
+		System.out.println("Select \n1. for searching person in state"
+				+ "\n2. for exiting");
 		int proceed = sc.nextInt();
+		if(proceed == 2)
+			return;
 		sc.nextLine();
 		System.out.println("Enter the first name of person");
 		String fName = sc.nextLine();
@@ -325,6 +350,32 @@ public class AddressBookMain
 	}
 	
 	
+	public static void printPersonsInCity() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select \n1. For getting persons of a city"
+				+ "\n2. for skipping");
+		int progress = sc.nextInt();
+		sc.nextLine();
+		if( progress == 2 )
+			return;
+		System.out.println("Enter the city whose persons contacts you want to get");
+		String city = sc.nextLine();
+		System.out.println(cityToContacts.get(city));
+	}
+	
+	public static void printPersonsInState() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select \n1. For getting persons of a State"
+				+ "\n2. for skipping");
+		int progress = sc.nextInt();
+		sc.nextLine();
+		if( progress == 2 )
+			return;
+		System.out.println("Enter the State whose persons contacts you want to get");
+		String city = sc.nextLine();
+		System.out.println(cityToContacts.get(city));
+	}
+	
     public static void main( String[] args ){
     	Scanner sc = new Scanner(System.in);
         System.out.println( "Welcome to Address Book Program" );
@@ -339,6 +390,7 @@ public class AddressBookMain
         getContactsForAddressBooks();
         searchCity();
         searchState();
+        printPersonsInCity();
 //        addressBook.editContactDetails();
 //        addressBook.deleteThrName();
         printAllAddressBooks();
