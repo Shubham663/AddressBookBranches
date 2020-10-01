@@ -116,7 +116,7 @@ public class AddressBookMain
 		{
 			List<ContactDetails> contactDetailsList = new ArrayList<ContactDetails>();
 			contactDetailsList.add(contactDetails);
-			cityToContacts.put(contactDetails.getState(), contactDetailsList);
+			stateToContacts.put(contactDetails.getState(), contactDetailsList);
 		}
 		contactBook.add(contactDetails);
 		nameToContact.put(name, contactDetails);
@@ -350,7 +350,7 @@ public class AddressBookMain
 	}
 	
 	
-	public static void printPersonsInCity() {
+	private static void printPersonsInCity() {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Select \n1. For getting persons of a city"
 				+ "\n2. for skipping");
@@ -360,10 +360,13 @@ public class AddressBookMain
 			return;
 		System.out.println("Enter the city whose persons contacts you want to get");
 		String city = sc.nextLine();
-		System.out.println(cityToContacts.get(city));
+		if(cityToContacts.containsKey(city))
+			System.out.println(cityToContacts.get(city));
+		else
+			System.out.println("No person present in city");
 	}
 	
-	public static void printPersonsInState() {
+	private static void printPersonsInState() {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Select \n1. For getting persons of a State"
 				+ "\n2. for skipping");
@@ -372,8 +375,41 @@ public class AddressBookMain
 		if( progress == 2 )
 			return;
 		System.out.println("Enter the State whose persons contacts you want to get");
+		String state = sc.nextLine();
+		if(stateToContacts.containsKey(state))
+			System.out.println(stateToContacts.get(state));
+		else
+			System.out.println("No persons present in State");
+	}
+	
+	private static void personCountInCity() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select"
+				+ "\n1. for getting count of persons in a city"
+				+ "\n2. for exiting");
+		int proceed = sc.nextInt();
+		sc.nextLine();
+		if(proceed == 2)
+			return;
+		System.out.println("Enter the city of whose person count you want");
 		String city = sc.nextLine();
-		System.out.println(cityToContacts.get(city));
+		if(cityToContacts.containsKey(city))
+			System.out.println("The number of persons in city "+ city +" are "+ cityToContacts.get(city).size());
+	}
+	
+	private static void personCountInState() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select"
+				+ "\n1. for getting count of persons in a state"
+				+ "\n2. for exiting");
+		int proceed = sc.nextInt();
+		sc.nextLine();
+		if(proceed == 2)
+			return;
+		System.out.println("Enter the state of whose person count you want");
+		String state = sc.nextLine();
+		if(stateToContacts.containsKey(state))
+			System.out.println("The number of persons in state "+ state +" are "+ stateToContacts.get(state).size());
 	}
 	
     public static void main( String[] args ){
@@ -391,8 +427,9 @@ public class AddressBookMain
         searchCity();
         searchState();
         printPersonsInCity();
-//        addressBook.editContactDetails();
-//        addressBook.deleteThrName();
+        printPersonsInState();
+        personCountInCity();
+        personCountInState();
         printAllAddressBooks();
 	}
 		
