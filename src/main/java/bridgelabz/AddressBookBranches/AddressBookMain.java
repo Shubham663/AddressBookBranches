@@ -21,9 +21,7 @@ public class AddressBookMain
 	 * nameToContact, the map from name to ContactDetails of a person
 	 */
 	private List<ContactDetails> contactBook = new ArrayList<ContactDetails>();
-	
 	private Map<String,ContactDetails> nameToContact = new HashMap<String,ContactDetails>();
-	
 	
 	/**
 	 * @return ContactDetails, returns object of type ContactDetails after taking i/p from user
@@ -53,7 +51,6 @@ public class AddressBookMain
 		return cd1;
 	}
 	
-	
 	/**
 	 * addContactDetails(), adds a person's ContactDetails to the AddressBook 
 	 */
@@ -67,6 +64,10 @@ public class AddressBookMain
 	 * printAddressBook(), prints the ContactDetails present in the AddressBook
 	 */
 	private void printAddressBook() {
+		if(contactBook.size() == 0) {
+			System.out.println("No contacts present in the address book");
+			return;
+		}
 		System.out.println("The contact details are as follows:");
 		for(int i=0;i <contactBook.size();i++) {
 			System.out.println("\n"+"Contact No:"+ (i+1));
@@ -74,6 +75,34 @@ public class AddressBookMain
 		}
 	}
 	
+	
+	/**
+	 * deleteThrName(), deleting a person's ContactDetails by specifying name
+	 */
+	private void deleteThrName() {
+		Scanner sc= new Scanner(System.in);
+		while (true) {
+			System.out.println(
+					"Would you like to delete any contact from addressbook" + "\n1. Y/y for yes" + "\n2. N/n for no");
+			String input = sc.nextLine();
+			char del = input.charAt(0);
+			if (del == 'Y' || del == 'y') {
+				System.out.println("Enter the full name of the contact you want to delete");
+				String name = sc.nextLine();
+				if (nameToContact.containsKey(name)) {
+					contactBook.remove(nameToContact.get(name));
+					nameToContact.remove(name);
+				}
+				else {
+					System.out.println("No contact with this name exists");
+					continue;
+				}
+				System.out.println("Deleted successfully");
+			}
+			else
+				break;
+		}
+	}
 	
 	/**
 	 * editContactDetails(), Provides an option for editing a person's details 
@@ -95,7 +124,7 @@ public class AddressBookMain
 			char edit = input.charAt(0);
 			if(Character.toUpperCase(edit)=='Y') {
 				System.out.println("Enter the name of the person whose details you want to edit");
-				sc.nextLine();       //catches the next line character
+				sc.nextLine();			//catches the new line character
 				/**
 				 * @param name, checks whose details the user wants to change
 				 */
@@ -163,7 +192,7 @@ public class AddressBookMain
 		
 	}
 	
-	 /**
+	/**
      * @param addressBook, an AddressBook for storing ContactDetails
      */
     public static void main( String[] args )
@@ -171,7 +200,9 @@ public class AddressBookMain
         System.out.println( "Welcome to Address Book Program" );
         AddressBookMain addressBook = new AddressBookMain();
         addressBook.addContactDetails(getContactDetails());
+        addressBook.addContactDetails(getContactDetails());
         addressBook.editContactDetails();
+        addressBook.deleteThrName();
         addressBook.printAddressBook();   
     }
 }
