@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Hello world!
@@ -39,7 +40,7 @@ public class AddressBookMain
 		return name;
 	}
 
-
+	
 	/**
 	 * @param name the name to set
 	 */
@@ -75,12 +76,30 @@ public class AddressBookMain
 		return cd1;
 	}
 	
+	private boolean duplicateFound(ContactDetails contactDetails) {
+		String fName = contactDetails.getFirstName(), lName = contactDetails.getLastName();
+		List<Object> duplicate = contactBook.stream().filter(cd -> (cd.getFirstName().equals(fName) && cd.getLastName().equals(lName))).collect(Collectors.toList());
+		if(duplicate.size()!=0)
+		{
+			System.out.println("Contact with this name already exists, not added");
+			return true;
+		}
+//		for(ContactDetails person : contactBook)
+//			if(person.equals(contactDetails))
+//			{
+//				System.out.println("Contact with this name already exists, not added");
+//				return true;
+//			}
+		return false;
+	}
+	
 	/**
 	 * addContactDetails(), adds a person's ContactDetails to the AddressBook 
 	 */
 	private void addContactDetails(ContactDetails contactDetails) {
+		if(this.duplicateFound(contactDetails))
+			return;
 		contactBook.add(contactDetails);
-		String name= contactDetails.getFirstName() + " " + contactDetails.getLastName();
 		nameToContact.put(name, contactDetails);
 	}
 	
@@ -89,7 +108,7 @@ public class AddressBookMain
 	 */
 	private void printAddressBook() {
 		if(contactBook.size() == 0) {
-			System.out.println("No contacts present in the address book");
+			System.out.println("No contacts present in the address book: " + this.getName());
 			return;
 		}
 		System.out.println("The contact details for addressbook "+this.getName()+" are as follows:");
@@ -248,22 +267,16 @@ public class AddressBookMain
 	 * @return AddressBookMainUC5, returns an Addressbook with only a name
 	 */
 	private static AddressBookMain getAddressBook() {
-		AddressBookMain addressBookA = new AddressBookMain();
+		AddressBookMain addressBook = new AddressBookMain();
 		Scanner sc= new Scanner(System.in);
 		System.out.println("Enter the name for the addressbook");
 		String name = sc.nextLine();
-		addressBookA.setName(name);
-		nameToAddressBook.put(name, addressBookA);
-		return addressBookA;
-//        addressBookA.addContactDetails(getContactDetails());
+		addressBook.setName(name);
+		nameToAddressBook.put(name, addressBook);
+		return addressBook;
 	}
 	
-	/**
-     * @param addressBookB, an AddressBook for storing ContactDetails
-     */
-	/**
-     * @param addressBookA, an AddressBook for storing ContactDetails
-     */
+	
     public static void main( String[] args ){
     	Scanner sc = new Scanner(System.in);
         System.out.println( "Welcome to Address Book Program" );
@@ -273,7 +286,7 @@ public class AddressBookMain
         	sc.nextLine();
         	if( another == 2 )
         		break;
-        	AddressBookMain addressBookB = getAddressBook();
+        	AddressBookMain addressBook = getAddressBook();
         }
         getContactsForAddressBooks();
 //        addressBook.editContactDetails();

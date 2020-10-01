@@ -24,6 +24,17 @@ public class ContactDetails{
 	 * @param phoneNumber , phoneNumber of the person
 	 * @param email , email of the person
 	 */
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		ContactDetails otherContact  = (ContactDetails)obj;
+		String name1 = this.getFirstName()+" "+this.getLastName();
+		String name2 = otherContact.getFirstName()+" "+otherContact.getLastName();
+		return (name1.equals(name2));
+	}
+	
+	
 	public ContactDetails(String firstName,String lastName,
 	String address,String city,String state,int zip,String phoneNumber,String email) {
 		this.firstName =  firstName;
