@@ -277,6 +277,54 @@ public class AddressBookMain
 	}
 	
 	
+	private static void searchCity() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select \n1. for searching person in city\2. for exiting");
+		int proceed = sc.nextInt();
+		sc.nextLine();
+		System.out.println("Enter the first name of person");
+		String fName = sc.nextLine();
+		System.out.println("Enter the last name of person");
+		String lName = sc.nextLine();
+		System.out.println("Enter the city in which you want to search");
+		String city = sc.nextLine();
+		Enumeration<String> keys = nameToAddressBook.keys();
+		List<ContactDetails> personInCity = new ArrayList<ContactDetails>();
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			AddressBookMain addressBook = nameToAddressBook.get(key);
+			personInCity.addAll( addressBook.contactBook.stream().filter(cd -> (cd.getCity().equals(city) && cd.getFirstName().equals(fName) && cd.getLastName().equals(lName))).collect(Collectors.toList()) );
+		}
+		if(personInCity.size()==0)
+			System.out.println("No such person exists in the mentioned city");
+		else
+			System.out.println(personInCity);
+	}
+	private static void searchState() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Select \n1. for searching person in city\n2. for exiting");
+		int proceed = sc.nextInt();
+		sc.nextLine();
+		System.out.println("Enter the first name of person");
+		String fName = sc.nextLine();
+		System.out.println("Enter the last name of person");
+		String lName = sc.nextLine();
+		System.out.println("Enter the state in which you want to search");
+		String state = sc.nextLine();
+		Enumeration<String> keys = nameToAddressBook.keys();
+		List<ContactDetails> personInState = new ArrayList<ContactDetails>();
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			AddressBookMain addressBook = nameToAddressBook.get(key);
+			personInState.addAll( addressBook.contactBook.stream().filter(cd -> (cd.getState().equals(state) && cd.getFirstName().equals(fName) && cd.getLastName().equals(lName))).collect(Collectors.toList()) );
+		}
+		if(personInState.size()==0)
+			System.out.println("No such person exists in the mentioned state");
+		else
+			System.out.println(personInState);
+	}
+	
+	
     public static void main( String[] args ){
     	Scanner sc = new Scanner(System.in);
         System.out.println( "Welcome to Address Book Program" );
@@ -289,6 +337,8 @@ public class AddressBookMain
         	AddressBookMain addressBook = getAddressBook();
         }
         getContactsForAddressBooks();
+        searchCity();
+        searchState();
 //        addressBook.editContactDetails();
 //        addressBook.deleteThrName();
         printAllAddressBooks();

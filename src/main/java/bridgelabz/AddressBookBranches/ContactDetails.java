@@ -148,7 +148,7 @@ public class ContactDetails{
 	 */
 	@Override
 	public String toString() {
-		return ("Name : "+firstName+" "+lastName+"\n"
+		return ("\nName : "+firstName+" "+lastName+"\n"
 				+ "Address : "+ address+", "+city+", "+state+"("+zip+")\n"
 						+ "Phone No. "+phoneNumber+"\n"
 								+ "Email : "+email  );
