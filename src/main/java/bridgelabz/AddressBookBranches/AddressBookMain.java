@@ -69,7 +69,7 @@ public class AddressBookMain {
 		String state = sc.nextLine();
 		System.out.println("Enter the zip code");
 		int zip = sc.nextInt();
-		sc.nextLine(); 							// catches the next line character
+		sc.nextLine(); // catches the next line character
 		System.out.println("Enter the phone number");
 		String phoneNumber = sc.next();
 		System.out.println("Enter the email");
@@ -391,40 +391,70 @@ public class AddressBookMain {
 		if (stateToContacts.containsKey(state))
 			System.out.println("The number of persons in state " + state + " are " + stateToContacts.get(state).size());
 	}
-	
+
 	private static void sortByPersonName() {
-		Scanner sc= new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);
 		CustomComparator c = new CustomComparator();
-		System.out.println("Select"
-				+ "\n1. For sorting enties in an addressbook"
-				+ "\n2. For sorting entries in all addressbooks"
-				+ "\n3. For exiting");
+		System.out.println("Select" + "\n1. For sorting entries by name in an addressbook"
+				+ "\n2. For sorting entries by name in all addressbooks" + "\n3. For exiting");
 		int proceed = sc.nextInt();
-		sc.nextLine();				//catches the newline character
-		switch(proceed) {
-		case 1: System.out.println("Enter the name of the addressbook whose details you want to sort");
-				String input = sc.nextLine();
-				AddressBookMain addBook = nameToAddressBook.get(input);
-				addBook.contactBook.stream().sorted(c).forEach(System.out::println);
-				break;
-		case 2: Enumeration<String> keys = nameToAddressBook.keys();
-				while(keys.hasMoreElements())
-				{
-					String key = keys.nextElement();
-					AddressBookMain addBook2 = nameToAddressBook.get(key);
-					System.out.println("The sorted coontact details of addressbook " + key + " are:");
-					addBook2.contactBook.stream().sorted(c).forEach(System.out::println);
-				}
-				break;
-		default : System.out.println("Exiting without sorting");
+		sc.nextLine(); // catches the newline character
+		switch (proceed) {
+		case 1:
+			System.out.println("Enter the name of the addressbook whose details you want to sort");
+			String input = sc.nextLine();
+			AddressBookMain addBook = nameToAddressBook.get(input);
+			addBook.contactBook.stream().sorted(c).forEach(System.out::println);
+			break;
+		case 2:
+			Enumeration<String> keys = nameToAddressBook.keys();
+			while (keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				AddressBookMain addBook2 = nameToAddressBook.get(key);
+				System.out.println("The sorted coontact details of addressbook " + key + " are:");
+				addBook2.contactBook.stream().sorted(c).forEach(System.out::println);
+			}
+			break;
+		default:
+			System.out.println("Exiting without sorting");
 			break;
 		}
-		System.out.println();
-		
-		
 	}
-	
-	
+
+	private static void sortByStateCityPin() {
+		Scanner sc = new Scanner(System.in);
+		CustomComparatorState c1 = new CustomComparatorState();
+		CustomComparatorCity c2 = new CustomComparatorCity();
+		CustomComparatorZip c3 = new CustomComparatorZip();
+		System.out.println("Select" + "\n1. For sorting entries in an addressbook by state"
+				+ "\n2. For sorting entries in an addressbook by city"
+				+ "\n3. For sorting entries in an addressbook by pin" + "\n4. For exiting");
+		int proceed = sc.nextInt();
+		sc.nextLine(); // catches the newline character
+		switch (proceed) {
+		case 1:
+			System.out.println("Enter the name of the addressbook whose details you want to sort by state");
+			String input = sc.nextLine();
+			AddressBookMain addBook = nameToAddressBook.get(input);
+			addBook.contactBook.stream().sorted(c1).forEach(System.out::println);
+			break;
+		case 2:
+			System.out.println("Enter the name of the addressbook whose details you want to sort by city");
+			String input2 = sc.nextLine();
+			AddressBookMain addBook2 = nameToAddressBook.get(input2);
+			addBook2.contactBook.stream().sorted(c2).forEach(System.out::println);
+			break;
+		case 3:
+			System.out.println("Enter the name of the addressbook whose details you want to sort by zip");
+			String input3 = sc.nextLine();
+			AddressBookMain addBook3 = nameToAddressBook.get(input3);
+			addBook3.contactBook.stream().sorted(c3).forEach(System.out::println);
+			break;
+		default:
+			System.out.println("Exiting without sorting");
+			break;
+		}
+	}
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
@@ -446,6 +476,7 @@ public class AddressBookMain {
 		personCountInState();
 		printAllAddressBooks();
 		sortByPersonName();
+		sortByStateCityPin();
 		System.out.println("Thank You for using the AddressBook Program");
 	}
 
