@@ -41,7 +41,6 @@ public class AddressBookMain {
 	private static Map<String, List<ContactDetails>> cityToContacts = new HashMap<String, List<ContactDetails>>();
 	private static Map<String, List<ContactDetails>> stateToContacts = new HashMap<String, List<ContactDetails>>();
 
-	
 	/**
 	 * @return the name
 	 */
@@ -462,7 +461,6 @@ public class AddressBookMain {
 			break;
 		}
 	}
-	
 
 	public static boolean writeToFile(String filePath) {
 		Enumeration<String> keys = nameToAddressBook.keys();
@@ -471,11 +469,11 @@ public class AddressBookMain {
 			AddressBookMain addressBook = nameToAddressBook.get(key);
 			for (int i = 0; i < addressBook.contactBook.size(); i++) {
 				Path path = Paths.get(filePath);
-				if(!Files.exists(path))
+				if (!Files.exists(path))
 					return false;
 				try {
-					String previous = new String(Files.readAllBytes(path));
-					Files.write(path,(addressBook.contactBook.get(i).toString() + " /").getBytes(),StandardOpenOption.APPEND);
+					Files.write(path, (addressBook.contactBook.get(i).toString()).getBytes(),
+							StandardOpenOption.APPEND);
 					return true;
 				} catch (IOException e) {
 					System.out.println("The file was not found");
@@ -484,22 +482,32 @@ public class AddressBookMain {
 		}
 		return false;
 	}
-	
 
-	public static boolean readFromFile(String filePath) {
+	public static List<ContactDetails> readFromFile(String filePath) {
 		Path path = Paths.get(filePath);
+		List<ContactDetails> addressBook = new ArrayList<>();
 		try {
 			String fileContent = new String(Files.readAllBytes(path));
-			String []contacts = fileContent.split("/");
-			for(String contact:contacts)
-				System.out.println(contact);
-			return true;
+			String[] contacts = fileContent.split("\n");
+			for (String contact : contacts) {
+				String[] details = contact.split(",");
+				String firstName = details[0].split(":")[1];
+				String lastName = details[1].split(":")[1];
+				String address = details[2].split(":")[1];
+				String city = details[3].split(":")[1];
+				String state = details[4].split(":")[1];
+				int zip = Integer.parseInt(details[5].split(":")[1]);
+				String phoneNumber = details[6].split(":")[1];
+				String email = details[7].split(":")[1];
+				addressBook.add(new ContactDetails(firstName, lastName, address, city, state, zip, phoneNumber, email));
+			}
+			System.out.println(addressBook);
+			return addressBook;
 		} catch (IOException e) {
 			System.out.println("The mentioned directory was not found");
 		}
-		return false;
+		return null;
 	}
-
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
