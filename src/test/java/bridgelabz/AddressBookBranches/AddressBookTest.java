@@ -61,4 +61,17 @@ public class AddressBookTest {
 		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
 		assertTrue(OpenCSVWriter.readFromCSVUsingPOJO());
 	}
+	
+	@Test
+	public void writeToJSONTest() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
+		assertTrue(OpenCSVWriter.writeToJSON());
+	}
+
+	@Test
+	public void readFromJSONTest() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
+		OpenCSVWriter.writeToJSON();
+		assertTrue(OpenCSVWriter.readFromJSON());
+	}
 }
