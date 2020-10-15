@@ -1,17 +1,27 @@
 package bridgelabz.AddressBookBranches;
 
+import com.opencsv.bean.CsvBindByName;
+
 /**
  * @author Shubham, class ContactDetails for storing info of person
  *
  */
 public class ContactDetails {
+	@CsvBindByName(column = "firstName")
 	private String firstName;
+	@CsvBindByName(column ="lastName")
 	private String lastName;
+	@CsvBindByName(column = "address")
 	private String address;
+	@CsvBindByName(column ="city")
 	private String city;
+	@CsvBindByName(column = "state")
 	private String state;
+	@CsvBindByName(column ="zip")
 	private int zip;
+	@CsvBindByName(column ="phoneNumber")
 	private String phoneNumber;
+	@CsvBindByName(column ="email")
 	private String email;
 
 	/**
@@ -44,6 +54,9 @@ public class ContactDetails {
 		this.zip = zip;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
+	}
+	
+	public ContactDetails() {
 	}
 
 	/**
@@ -163,7 +176,7 @@ public class ContactDetails {
 	 */
 	@Override
 	public String toString() {
-		return ("First Name :" + firstName + ",Last Name :" + lastName + ",Address :" + address + ",city :" + city
-				+ ",state :" + state + ",zip :" + zip + ",Phone No. :" + phoneNumber + ",Email :" + email + "\n");
+		return ("First Name :" + firstName + ",Last Name :" + lastName + ",Address :" + address + ",City :" + city
+				+ ",State :" + state + ",Zip :" + zip + ",Phone Number :" + phoneNumber + ",Email :" + email + "\n");
 	}
 }

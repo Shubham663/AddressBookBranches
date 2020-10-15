@@ -12,6 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
 import bridgelabz.AddressBookBranches.*;;
 
 /**
@@ -23,7 +26,7 @@ public class AddressBookTest {
 	@Before
 	public void init() {
 		addressBook = AddressBookMain.getAddressBook();
-		addressBook.addContactDetails(AddressBookMain.getContactDetails());
+		addressBook.addContactDetails(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
 	}
 
 	@Test
@@ -40,27 +43,22 @@ public class AddressBookTest {
 		assertTrue(addressBook.writeToFile("F:/demo/demo.txt"));
 		assertNotNull(addressBook.readFromFile("F:/demo/demo.txt"));
 	}
+	
+	@Test
+	public void writeToCSVTest() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
+		assertTrue(OpenCSVWriter.writeToCSV());
+	}
 
-//    @After
-//	public void remove() {
-//		Path path = Paths.get("F:/demo");
-//		if (Files.exists(path)) {
-//			path = Paths.get("F:/demo/demo.txt");
-//			if (Files.exists(path)) {
-//				try {
-//					Files.delete(path);
-//				} catch (IOException e) {
-//					System.out.println("The file does not exist");
-//					e.printStackTrace();
-//				}
-//			}
-//			path = Paths.get("F:/demo");
-//			try {
-//				Files.delete(path);
-//			} catch (IOException e) {
-//				System.out.println("The directory does not exist");
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+	@Test
+	public void readFromCSVTest() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
+		assertTrue(OpenCSVWriter.readFromCSV());
+	}
+	
+	@Test
+	public void readFromCSVUsingPOJOTest() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+		assertTrue(FileOperations.createDirectory("F:", "F:/demo"));
+		assertTrue(OpenCSVWriter.readFromCSVUsingPOJO());
+	}
 }

@@ -41,6 +41,21 @@ public class AddressBookMain {
 	private static Map<String, List<ContactDetails>> cityToContacts = new HashMap<String, List<ContactDetails>>();
 	private static Map<String, List<ContactDetails>> stateToContacts = new HashMap<String, List<ContactDetails>>();
 
+	
+	/**
+	 * @return the contactBook
+	 */
+	public List<ContactDetails> getContactBook() {
+		return contactBook;
+	}
+
+	/**
+	 * @param contactBook the contactBook to set
+	 */
+	public void setContactBook(List<ContactDetails> contactBook) {
+		this.contactBook = contactBook;
+	}
+
 	/**
 	 * @return the name
 	 */
