@@ -3,6 +3,9 @@
  */
 package bridgelabz.AddressBookBranches;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
@@ -10,9 +13,11 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
@@ -33,7 +38,8 @@ public class OpenCSVWriter {
 		List<ContactDetails> addressBook = new ArrayList();
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
-		Writer writer = Files.newBufferedWriter(Paths.get("F:/demo/demo.csv"));
+//		Writer writer = Files.newBufferedWriter(Paths.get("F:/demo/demo.csv"));
+		FileWriter writer = new FileWriter("F:/demo/newdemo.csv");
 		StatefulBeanToCsv<ContactDetails> beanToCsv = new StatefulBeanToCsvBuilder<ContactDetails>(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
 		ColumnPositionMappingStrategy<ContactDetails> mappingStrategy= new ColumnPositionMappingStrategy<ContactDetails>();
 		mappingStrategy.setType(ContactDetails.class);
@@ -114,6 +120,33 @@ public class OpenCSVWriter {
 			e.printStackTrace();
 			return false;
 		}
+		return true;
+	}
+
+	public static boolean writeToJSON() {
+		try {
+			Reader reader = Files.newBufferedReader(Paths.get("F:/demo/demo.csv"));
+			CsvToBean<ContactDetails> csvToBean = new CsvToBeanBuilder(reader).withType(ContactDetails.class).withIgnoreLeadingWhiteSpace(true).build();
+			List<ContactDetails> records = csvToBean.parse();
+			Gson gson = new Gson();
+			String json = gson.toJson(records);
+			FileWriter writer = new FileWriter("F:/demo/newdemo.json");
+			writer.write(json);
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("Error while reading from CSV File");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean readFromJSON() throws FileNotFoundException {
+		Gson gson = new Gson();
+		BufferedReader bufferedReader = new BufferedReader(new FileReader("F:/demo/newdemo.json"));
+		ContactDetails[] contactDetails = gson.fromJson(bufferedReader, ContactDetails[].class);
+		List<ContactDetails> listOfContactDetails = Arrays.asList(contactDetails);
+		System.out.println(listOfContactDetails);
 		return true;
 	}
 }
