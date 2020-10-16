@@ -33,15 +33,17 @@ public class OpenCSVWriter {
 		List<ContactDetails> addressBook = new ArrayList();
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
-		Writer writer = Files.newBufferedWriter(Paths.get("F:/demo/demo.csv"));
-		StatefulBeanToCsv<ContactDetails> beanToCsv = new StatefulBeanToCsvBuilder<ContactDetails>(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
-		ColumnPositionMappingStrategy<ContactDetails> mappingStrategy= new ColumnPositionMappingStrategy<ContactDetails>();
-		mappingStrategy.setType(ContactDetails.class);
-		String []columns = new String[] {"firstName","lastName","address","city","state","zip","phoneNumber","email"};
-		mappingStrategy.setColumnMapping(columns);
 		try {
+			Writer writer = Files.newBufferedWriter(Paths.get("F:/demo/demo.csv"));
+			StatefulBeanToCsv<ContactDetails> beanToCsv = new StatefulBeanToCsvBuilder<ContactDetails>(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
+			ColumnPositionMappingStrategy<ContactDetails> mappingStrategy= new ColumnPositionMappingStrategy<ContactDetails>();
+			mappingStrategy.setType(ContactDetails.class);
+			String []columns = new String[] {"firstName","lastName","address","city","state","zip","phoneNumber","email"};
+			mappingStrategy.setColumnMapping(columns);
+		
 			System.out.println(addressBook);
 			beanToCsv.write(addressBook);
+			writer.close();
 		}catch(Exception exception) {
 			System.out.println("Exception occured while writing");
 		}
