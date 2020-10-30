@@ -38,7 +38,7 @@ public class AddressBookTest {
 		payDataService.loadDriver();
 		connection = payDataService.connectToDatabase(connection);
 		addressBook = AddressBookMain.getAddressBook();
-		addressBook.addContactDetails(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
+		addressBook.addContactDetails(new ContactDetails("Shubham","Mittal", "302/Rohtak/Haryana", "Rohtak", "Haryana", 110038, "9876543450", "sh@gmail.com"));
 		listContactDetails = new ArrayList<>();
 	}
 
@@ -102,8 +102,15 @@ public class AddressBookTest {
     public void getUpdateDataInDatabaseAndAddressbook() throws JDBCException
     {
 		listContactDetails = payDataService.getListFromDatabase(connection);
-		listContactDetails.get(0).setAddress("Gurugram");
-		System.out.println(listContactDetails);
-        assertEquals(6, listContactDetails.size(),0);
+		listContactDetails.get(0).setAddress("Rewadi");
+		payDataService.updateDetailsPrepared(connection,"address","Rewadi",listContactDetails.get(0).getFirstName());
+		List<ContactDetails> list = payDataService.getListFromDatabase(connection);
+		String address = null;
+		for(ContactDetails contactDetails : list) {
+			if(contactDetails.getFirstName().equals(listContactDetails.get(0).getFirstName())) {
+				address = contactDetails.getAddress();
+			}
+		}
+        assertEquals("Rewadi", address);
     }
 }
