@@ -157,43 +157,60 @@ public class PayrollDatabaseService {
 			throw new JDBCException("Error while updating with prepared Statement " + exception.getMessage());
 		}
 	}
-//
-//	public List<Employees> getDateRange(Connection connection, Date date1, Date date2) throws JDBCException {
-//
-//		List<Employees> listEmployees = null;
-//		try {
-//			preparedStatement = connection.prepareStatement(
-//					"Select * from employees where start_date between cast(? as date) and cast(? as date)");
-//			preparedStatement.setDate(1, date1);
-//			preparedStatement.setDate(2, date2);
-//			ResultSet result = preparedStatement.executeQuery();
-//			listEmployees = new ArrayList<>();
-//			try {
-//				while (result.next()) {
-//					Employees employee = new Employees();
-//					employee.setEmployeeID(result.getInt(1));
-//					employee.setName(result.getString(2));
-//					employee.setSalary(result.getDouble(3));
-//					employee.setStart_date(result.getDate(4));
-//					employee.setGender(result.getString(5));
-//					employee.setBasicPay(result.getDouble(6));
-//					employee.setDeductions(result.getDouble(7));
-//					employee.setTaxablePay(result.getDouble(8));
-//					employee.setIncomeTax(result.getDouble(9));
-//					employee.setNetPay(result.getDouble(10));
-//					employee.setPhoneNumber(result.getLong(11));
-//					listEmployees.add(employee);
-//				}
-//				logger.info("List successfully retrieved from database");
-//			} catch (SQLException exception) {
-//				throw new JDBCException("Error while retrieving data");
-//			}
-//			preparedStatement.close();
-//		} catch (SQLException exception) {
-//			throw new JDBCException("Error while getting recods with prepared Statement ");
-//		}
-//		return listEmployees;
-//	}
+
+	public List<ContactDetails> getDateRange(Connection connection, Date date1, Date date2) throws JDBCException {
+		ResultSet result = null;
+		List<ContactDetails> listContactDetails = null;
+		try {
+			connection.setAutoCommit(false);
+			preparedStatement = connection.prepareStatement(
+					"Select * from contacts where date_added between cast(? as date) and cast(? as date)");
+			preparedStatement.setDate(1, date1);
+			preparedStatement.setDate(2, date2);
+			result = preparedStatement.executeQuery();
+			listContactDetails = new ArrayList<>();
+			while (result.next()) {
+				ContactDetails contactDetails = new ContactDetails();
+				contactDetails.setFirstName(result.getString(1));
+				contactDetails.setAddress(result.getString(2));
+				contactDetails.setLastName(result.getString(5));
+				contactDetails.setEmail(result.getString(4));
+				long phoneNumber = (long)result.getDouble(3);
+				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
+				listContactDetails.add(contactDetails);
+			}
+			preparedStatement = connection.prepareStatement("select c.first_name,zip_code,city,state from contacts as c,contacts_address as cd,address as a where c.first_name = cd.first_name and cd.zip = a.zip_code and c.date_added between cast(? as date) and cast(? as date)");
+			preparedStatement.setDate(1, date1);
+			preparedStatement.setDate(2, date2);
+			result = preparedStatement.executeQuery();			
+			while (result.next()) {
+				String firstName = result.getString(1);
+				for(ContactDetails cd:listContactDetails) {
+					if(cd.getFirstName().equals(firstName)) {
+//						System.out.println(firstName);
+						cd.setZip((int)result.getDouble(2));
+						cd.setCity(result.getString(3));
+						cd.setState(result.getString(4));
+						break;
+					}
+				}
+			}
+			connection.commit();
+			connection.setAutoCommit(true);
+			logger.info("List successfully retrieved from database");
+		} catch (SQLException exception) {
+			throw new JDBCException("Error while retrieving data");
+		} finally {
+			try {
+				if (result != null)
+					result.close();
+			} catch (SQLException e) {
+				throw new JDBCException(
+						"Error while closing resources when retrieving data" + connection + e.getMessage());
+			}
+		}
+		return listContactDetails;
+	}
 //
 //	public int groupFunctionCount(Connection connection) throws JDBCException {
 //		int count = 0;
