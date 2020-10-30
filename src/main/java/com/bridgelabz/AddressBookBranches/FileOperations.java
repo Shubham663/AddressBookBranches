@@ -1,4 +1,4 @@
-package bridgelabz.AddressBookBranches;
+package com.bridgelabz.AddressBookBranches;
 
 import java.io.IOException;
 import java.nio.file.Files;
