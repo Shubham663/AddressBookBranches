@@ -137,4 +137,16 @@ public class AddressBookTest {
 		listContactDetails = payDataService.getStateContacts(connection,"Haryana");
         assertEquals(5, listContactDetails.size());
     }
+	
+	@Test
+    public void addNewContact() throws JDBCException
+    {
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		int initial = listContactDetails.size();
+		ContactDetails contactDetails = new ContactDetails("Shahrukh","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "sk@gmail.com");
+		payDataService.addContact(connection,contactDetails);
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		assertEquals((initial+1), listContactDetails.size());
+    }
+	
 }
