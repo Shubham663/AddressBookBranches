@@ -142,17 +142,21 @@ public class PayrollDatabaseService {
 //		}
 //	}
 //
-//	public void updateDetailsPrepared(Connection connection) throws JDBCException {
-//		try {
-//			preparedStatement = connection.prepareStatement("Update employees set salary = ? where name = ?");
-//			preparedStatement.setDouble(1, 4000000);
-//			preparedStatement.setString(2, "Terisa");
-//			preparedStatement.execute();
-//			preparedStatement.close();
-//		} catch (SQLException exception) {
-//			throw new JDBCException("Error while updating with prepared Statement ");
-//		}
-//	}
+	public void updateDetailsPrepared(Connection connection,String field,String value,String record) throws JDBCException {
+		try {
+			connection.setAutoCommit(false);
+			preparedStatement = connection.prepareStatement("Update contacts set address = ? where first_name = ?");
+//			preparedStatement.setString(1, field);
+			preparedStatement.setString(1, value);
+			preparedStatement.setString(2, record);
+			preparedStatement.execute();
+			connection.commit();
+			connection.setAutoCommit(true);
+			preparedStatement.close();
+		} catch (SQLException exception) {
+			throw new JDBCException("Error while updating with prepared Statement " + exception.getMessage());
+		}
+	}
 //
 //	public List<Employees> getDateRange(Connection connection, Date date1, Date date2) throws JDBCException {
 //
