@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,5 +113,14 @@ public class AddressBookTest {
 			}
 		}
         assertEquals("Rewadi", address);
+    }
+	
+	@Test
+    public void getDataInParticularRange() throws JDBCException
+    {
+		Date date1 = Date.valueOf("2020-05-01");
+		Date date2 = Date.valueOf("2020-07-01");
+		listContactDetails = payDataService.getDateRange(connection, date1, date2);
+        assertEquals(3, listContactDetails.size());
     }
 }
