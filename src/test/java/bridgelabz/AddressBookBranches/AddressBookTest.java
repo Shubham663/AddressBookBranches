@@ -123,4 +123,18 @@ public class AddressBookTest {
 		listContactDetails = payDataService.getDateRange(connection, date1, date2);
         assertEquals(3, listContactDetails.size());
     }
+	
+	@Test
+    public void getContactsInCity() throws JDBCException
+    {
+		listContactDetails = payDataService.getCityContacts(connection,"Gurugram");
+        assertEquals(3, listContactDetails.size());
+    }
+	
+	@Test
+    public void getContactsInState() throws JDBCException
+    {
+		listContactDetails = payDataService.getStateContacts(connection,"Haryana");
+        assertEquals(5, listContactDetails.size());
+    }
 }

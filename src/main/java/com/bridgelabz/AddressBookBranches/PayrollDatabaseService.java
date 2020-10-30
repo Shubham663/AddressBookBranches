@@ -564,4 +564,88 @@ public class PayrollDatabaseService {
 //		}
 //		return listEmployees;
 //	}
+
+	public List<ContactDetails> getCityContacts(Connection connection, String city) throws JDBCException {
+		ResultSet result = null;
+		List<ContactDetails> listContactDetails = null;
+		try {
+			connection.setAutoCommit(false);
+			preparedStatement = connection.prepareStatement(
+					"select c.first_name,c.last_name,c.address,c.phone_number,c.email,a.zip_code,a.city,a.state from"
+					+ " contacts as c, address as a,contacts_address as ca where a.city = ? and c.first_name = ca.first_name"
+					+ " and ca.zip = a.zip_code;");
+			preparedStatement.setString(1, city);
+			result = preparedStatement.executeQuery();
+			listContactDetails = new ArrayList<>();
+			while (result.next()) {
+				ContactDetails contactDetails = new ContactDetails();
+				contactDetails.setFirstName(result.getString(1));
+				contactDetails.setAddress(result.getString(3));
+				contactDetails.setLastName(result.getString(2));
+				contactDetails.setEmail(result.getString(5));
+				long phoneNumber = (long)result.getDouble(4);
+				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
+				contactDetails.setZip((int)result.getDouble(6));
+				contactDetails.setCity(result.getString(7));
+				contactDetails.setState(result.getString(8));
+				listContactDetails.add(contactDetails);
+			}
+			connection.commit();
+			connection.setAutoCommit(true);
+			logger.info("List successfully retrieved from database");
+		} catch (SQLException exception) {
+			throw new JDBCException("Error while retrieving data");
+		} finally {
+			try {
+				if (result != null)
+					result.close();
+			} catch (SQLException e) {
+				throw new JDBCException(
+						"Error while closing resources when retrieving data" + connection + e.getMessage());
+			}
+		}
+		return listContactDetails;
+	}
+
+	public List<ContactDetails> getStateContacts(Connection connection, String state) throws JDBCException {
+		ResultSet result = null;
+		List<ContactDetails> listContactDetails = null;
+		try {
+			connection.setAutoCommit(false);
+			preparedStatement = connection.prepareStatement(
+					"select c.first_name,c.last_name,c.address,c.phone_number,c.email,a.zip_code,a.city,a.state from"
+					+ " contacts as c, address as a,contacts_address as ca where a.state = ? and c.first_name = ca.first_name"
+					+ " and ca.zip = a.zip_code;");
+			preparedStatement.setString(1, state);
+			result = preparedStatement.executeQuery();
+			listContactDetails = new ArrayList<>();
+			while (result.next()) {
+				ContactDetails contactDetails = new ContactDetails();
+				contactDetails.setFirstName(result.getString(1));
+				contactDetails.setAddress(result.getString(3));
+				contactDetails.setLastName(result.getString(2));
+				contactDetails.setEmail(result.getString(5));
+				long phoneNumber = (long)result.getDouble(4);
+				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
+				contactDetails.setZip((int)result.getDouble(6));
+				contactDetails.setCity(result.getString(7));
+				contactDetails.setState(result.getString(8));
+				listContactDetails.add(contactDetails);
+			}
+			connection.commit();
+			connection.setAutoCommit(true);
+			logger.info("List successfully retrieved from database");
+		} catch (SQLException exception) {
+			throw new JDBCException("Error while retrieving data");
+		} finally {
+			try {
+				if (result != null)
+					result.close();
+			} catch (SQLException e) {
+				throw new JDBCException(
+						"Error while closing resources when retrieving data" + connection + e.getMessage());
+			}
+		}
+		return listContactDetails;
+	}
 }
