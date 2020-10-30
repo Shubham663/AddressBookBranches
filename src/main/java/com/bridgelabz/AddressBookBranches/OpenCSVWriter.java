@@ -1,7 +1,7 @@
 /**
  * 
  */
-package bridgelabz.AddressBookBranches;
+package com.bridgelabz.AddressBookBranches;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

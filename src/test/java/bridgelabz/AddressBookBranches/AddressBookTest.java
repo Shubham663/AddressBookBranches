@@ -1,5 +1,6 @@
 package bridgelabz.AddressBookBranches;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -7,26 +8,38 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.bridgelabz.AddressBookBranches.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-
-import bridgelabz.AddressBookBranches.*;;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;;
 
 /**
  * Unit test for AddressBook.
  */
 public class AddressBookTest {
 	AddressBookMain addressBook;
-
+	List<ContactDetails> listContactDetails = null;
+	Connection connection = null;
+	Logger logger = null;
+	PayrollDatabaseService payDataService = null;
 	@Before
-	public void init() {
+	public void init() throws JDBCException {
+		logger = LogManager.getLogger();
+		payDataService = PayrollDatabaseService.getInstance();
+		payDataService.loadDriver();
+		connection = payDataService.connectToDatabase(connection);
 		addressBook = AddressBookMain.getAddressBook();
 		addressBook.addContactDetails(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
+		listContactDetails = new ArrayList<>();
 	}
 
 	@Test
@@ -76,4 +89,21 @@ public class AddressBookTest {
 		OpenCSVWriter.writeToJSON();
 		assertTrue(OpenCSVWriter.readFromJSON());
 	}
+	
+	@Test
+    public void getDataFromDatabase() throws JDBCException
+    {
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		System.out.println(listContactDetails);
+        assertEquals(6, listContactDetails.size(),0);
+    }
+	
+	@Test
+    public void getUpdateDataInDatabaseAndAddressbook() throws JDBCException
+    {
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		listContactDetails.get(0).setAddress("Gurugram");
+		System.out.println(listContactDetails);
+        assertEquals(6, listContactDetails.size(),0);
+    }
 }

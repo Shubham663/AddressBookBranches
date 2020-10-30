@@ -1,4 +1,4 @@
-package bridgelabz.AddressBookBranches;
+package com.bridgelabz.AddressBookBranches;
 
 import com.opencsv.bean.CsvBindByName;
 
