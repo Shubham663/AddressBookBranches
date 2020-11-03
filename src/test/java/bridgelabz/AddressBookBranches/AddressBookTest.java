@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,5 +149,34 @@ public class AddressBookTest {
 		listContactDetails = payDataService.getListFromDatabase(connection);
 		assertEquals((initial+1), listContactDetails.size());
     }
+	
+	@Test
+    public void addMultipleContactsThreads() throws JDBCException
+    {
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		int initial = listContactDetails.size();
+		
+		ContactDetails contactDetails = new ContactDetails("Aamir","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "sk@gmail.com");
+		ContactDetails contactDetails2 = new ContactDetails("Salman","Khan", "3023", "Jagadri", "Haryana", 110038, "9876987894", "salk@gmail.com");
+		
+		List<ContactDetails> list = new ArrayList<>();
+		list.add(contactDetails);
+		list.add(contactDetails2);
+		
+		payDataService.addMultipleContactsThreads(connection,list);
+		
+		listContactDetails = payDataService.getListFromDatabase(connection);
+		assertEquals((initial+2), listContactDetails.size());
+    }
+	
+	 @After
+	    public void endMethod() throws JDBCException {
+	    	try {
+	    			if(payDataService.getPreparedStatement() != null)
+	    				payDataService.getPreparedStatement().close();
+				}catch(SQLException exception) {
+					throw new JDBCException("Error while closing resources when updating database prepared database" + connection + exception.getMessage());
+				}
+	    }
 	
 }
