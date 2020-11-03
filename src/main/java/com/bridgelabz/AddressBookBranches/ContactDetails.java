@@ -1,5 +1,7 @@
 package com.bridgelabz.AddressBookBranches;
 
+import java.util.Objects;
+
 import com.opencsv.bean.CsvBindByName;
 
 /**
@@ -44,6 +46,11 @@ public class ContactDetails {
 		return (name1.equals(name2));
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName,lastName,zip,address,city,state,phoneNumber,email);
+	}
+	
 	public ContactDetails(String firstName, String lastName, String address, String city, String state, int zip,
 			String phoneNumber, String email) {
 		this.firstName = firstName;

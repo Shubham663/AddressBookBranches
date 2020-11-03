@@ -12,7 +12,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -134,7 +136,7 @@ public class PayrollDatabaseService {
 			preparedStatement.execute();
 			connection.commit();
 			connection.setAutoCommit(true);
-			preparedStatement.close();
+//			preparedStatement.close();
 		} catch (SQLException exception) {
 			throw new JDBCException("Error while updating with prepared Statement " + exception.getMessage());
 		}
@@ -278,11 +280,16 @@ public class PayrollDatabaseService {
 		return listContactDetails;
 	}
 
-	public void addContact(Connection connection, ContactDetails contactDetails) throws JDBCException {
-		List<ContactDetails> listContactDetails = null;
+	public synchronized void addContact(Connection connection, ContactDetails contactDetails) throws JDBCException {
+		Connection connection2 = null;
 		try {
-			connection.setAutoCommit(false);
-			preparedStatement = connection.prepareStatement("insert into contacts values(?,?,?,?,?,?)");
+			 connection2 = connectToDatabase(connection2);
+		} catch (JDBCException e1) {
+			logger.error("Error while getting another connection");
+		}
+		try {
+			connection2.setAutoCommit(false);
+			preparedStatement = connection2.prepareStatement("insert into contacts values(?,?,?,?,?,?)");
 			preparedStatement.setString(1, contactDetails.getFirstName());
 			preparedStatement.setString(2, contactDetails.getAddress());
 			preparedStatement.setLong(3, Long.parseLong(contactDetails.getPhoneNumber()));
@@ -291,7 +298,7 @@ public class PayrollDatabaseService {
 			preparedStatement.setDate(6, Date.valueOf("2020-08-15"));
 			preparedStatement.execute();
 			try {
-				preparedStatement = connection.prepareStatement("insert into address values(?,?,?)");
+				preparedStatement = connection2.prepareStatement("insert into address values(?,?,?)");
 				preparedStatement.setDouble(1, contactDetails.getZip());
 				preparedStatement.setString(2, contactDetails.getCity());
 				preparedStatement.setString(3, contactDetails.getState());
@@ -300,20 +307,47 @@ public class PayrollDatabaseService {
 			catch(SQLException exception) {
 				logger.info("Data already present inside address table " + exception.getMessage());
 			}
-			preparedStatement = connection.prepareStatement("insert into contacts_address values(?,?)");
+			preparedStatement = connection2.prepareStatement("insert into contacts_address values(?,?)");
 			preparedStatement.setString(1, contactDetails.getFirstName());
 			preparedStatement.setDouble(2, contactDetails.getZip());
 			preparedStatement.execute();
-			connection.commit();
-			connection.setAutoCommit(true);
+			connection2.commit();
+			connection2.setAutoCommit(true);
 			logger.info("List successfully retrieved from database");
 		} catch (SQLException exception) {
 			try {
-			connection.rollback();
+			connection2.rollback();
 		} catch (SQLException e) {
 			throw new JDBCException("Error when trying to perform rollback on connection " + e.getMessage());
 		}
 		throw new JDBCException("Error while inserting data into multiple tables with prepared Statement " + exception.getMessage());
 		} 
+	}
+
+	public void addMultipleContactsThreads(Connection connection, List<ContactDetails> list) {
+		Map<Integer, Boolean> contactAddStatus = new HashMap<>();
+		list.forEach(contactDetails ->{
+			Runnable task = () -> {
+					
+				logger.info("contact being added " + Thread.currentThread().getName());
+				contactAddStatus.put(contactDetails.hashCode(), false);
+				try {
+					addContact(connection, contactDetails);
+				} catch (JDBCException e) {
+					logger.error("Error when adding contact " + e.getMessage());
+				}
+				logger.info("Contact added " + Thread.currentThread().getName());
+				contactAddStatus.put(contactDetails.hashCode(), true);
+			};
+			Thread thread = new Thread(task,contactDetails.getFirstName());
+			thread.start();
+		});
+			while(contactAddStatus.size() < list.size() || contactAddStatus.containsValue(false)) {
+				try{
+					Thread.sleep(10);
+				}catch(InterruptedException exception) {
+					logger.error("Error while waiting for threads to finish");
+				}
+			}
 	}
 }
