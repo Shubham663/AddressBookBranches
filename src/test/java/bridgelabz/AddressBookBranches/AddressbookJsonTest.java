@@ -61,4 +61,16 @@ public class AddressbookJsonTest {
 		response.then().body("zip",Matchers.hasItem(110038));
 	}
 	
+	@Test
+	public void updateContactsInJsonServerTest() {
+		ContactDetails contactDetails = new ContactDetails("Imran","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "ak@gmail.com");
+		AddressBookJsonService aService = AddressBookJsonService.getInstance();
+		Response response = aService.updateContactsInJsonServer(contactDetails,1);
+		String responseAsString = response.asString();
+		System.out.println(responseAsString);
+		response.then().body("address", Matchers.is("302"));
+		response.then().body("first_name", Matchers.is("Imran"));
+		response.then().body("state",Matchers.is("Haryana"));
+	}
+	
 }

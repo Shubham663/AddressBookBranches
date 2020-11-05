@@ -20,6 +20,7 @@ import io.restassured.response.Response;
 public class AddressBookJsonService {
 	private static AddressBookJsonService addressBookJsonService;
 	Logger logger = LogManager.getLogger();
+	
 	private AddressBookJsonService() {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = 3000;
@@ -88,5 +89,22 @@ public class AddressBookJsonService {
 			}
 		}
 		return true;
+	}
+	
+	public Response updateContactsInJsonServer(ContactDetails contactDetails, int id) {
+		Response response = RestAssured.given()
+				.contentType(ContentType.JSON)
+				.accept(ContentType.JSON)
+				.body("{\"first_name\": \""+contactDetails.getFirstName()+
+						"\",\"last_name\": \""+ contactDetails.getLastName() +
+						"\",\"address\": \"" + contactDetails.getAddress() +
+						"\",\"city\": \"" + contactDetails.getCity() +
+						"\",\"state\": \"" + contactDetails.getState() +
+						"\",\"zip\": " + contactDetails.getZip() +
+						",\"phoneNumber\": \"" + contactDetails.getPhoneNumber() +
+						"\",\"email\": \"" + contactDetails.getEmail() + "\"}")
+				.when()
+				.put("/AddressBook/update/"+id);
+		return response;
 	}
 }
