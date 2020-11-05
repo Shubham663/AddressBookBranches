@@ -3,6 +3,12 @@
  */
 package bridgelabz.AddressBookBranches;
 
+import static org.junit.Assert.assertThat;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -37,4 +43,17 @@ public class AddressbookJsonTest {
 		response.then().body("city", Matchers.is("Rohtak"));
 		response.then().body("zip",Matchers.is(110038));
 	}
+	
+	@Test
+	public void addMultipleContactsToJsonServerTest_returnsTrueWhenAdditionSuccessful() {
+		ContactDetails contactDetails = new ContactDetails("Aamir","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "ak@gmail.com");
+		ContactDetails contactDetails2 = new ContactDetails("Salman","Khan", "305", "Rohtak", "Haryana", 110038, "9876983450", "sk@gmail.com");
+		List<ContactDetails> list = new ArrayList<>();
+		list.add(contactDetails);
+		list.add(contactDetails2);
+		AddressBookJsonService aService = AddressBookJsonService.getInstance();
+		Boolean boolean1 = aService.addMultipleContactsToJsonServer(list);
+		assertThat("Contacts not added", true, Matchers.is(true));
+	}
+	
 }

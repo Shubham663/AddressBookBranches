@@ -65,4 +65,28 @@ public class AddressBookJsonService {
 				.post("/AddressBook/create");
 		return response;
 	}
+	
+	public Boolean addMultipleContactsToJsonServer(List<ContactDetails> list) {
+		Response response = null;
+		Map<Integer,Boolean> contactAddStatus = new HashMap<>();
+		list.forEach(contact -> {
+			Runnable task = () -> {
+				contactAddStatus.put(contact.hashCode(), false);
+				final Response response2 = addContactToServer(contact);
+				
+				contactAddStatus.put(contact.hashCode(), true);
+			};
+			Thread thread = new Thread(task,contact.getFirstName());
+			thread.start();
+		});
+		while(contactAddStatus.size()<list.size() || contactAddStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				logger.error("Error while waiting for threads to finish " + e.getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -10,17 +10,6 @@
       "zip": 12,
       "phoneNumber": "9879876587",
       "email": "lisa@gmail.com"
-    },
-    {
-      "first_name": "Aamir",
-      "last_name": "Khan",
-      "address": "302",
-      "city": "Rohtak",
-      "state": "Haryana",
-      "zip": 110038,
-      "phoneNumber": "9876983450",
-      "email": "sk@gmail.com",
-      "id": 2
     }
   ]
 }
