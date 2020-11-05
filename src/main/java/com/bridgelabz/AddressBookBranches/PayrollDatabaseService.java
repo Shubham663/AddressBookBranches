@@ -2,7 +2,7 @@ package com.bridgelabz.AddressBookBranches;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.Driver;
+//import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,13 +57,13 @@ public class PayrollDatabaseService {
 		}
 	}
 
-	public void listOfDrivers() {
-		Enumeration<java.sql.Driver> driverList = DriverManager.getDrivers();
-		while (driverList.hasMoreElements()) {
-			Driver driverClass = driverList.nextElement();
-			System.out.println("	" + driverClass.getClass().getName());
-		}
-	}
+//	public void listOfDrivers() {
+//		Enumeration<java.sql.Driver> driverList = DriverManager.getDrivers();
+//		while (driverList.hasMoreElements()) {
+//			Driver driverClass = driverList.nextElement();
+//			System.out.println("	" + driverClass.getClass().getName());
+//		}
+//	}
 
 	public Connection connectToDatabase(Connection connection) throws JDBCException {
 		try {
