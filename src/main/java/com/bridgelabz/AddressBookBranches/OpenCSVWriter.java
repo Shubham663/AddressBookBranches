@@ -11,11 +11,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.opencsv.CSVReader;
@@ -38,21 +41,43 @@ public class OpenCSVWriter {
 		List<ContactDetails> addressBook = new ArrayList();
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
 		addressBook.add(new ContactDetails("Shubham","Mittal", "302", "K", "H", 21, "1245341212", "gmail.com"));
-		try {
-			Writer writer = Files.newBufferedWriter(Paths.get("F:/demo/demo.csv"));
-			StatefulBeanToCsv<ContactDetails> beanToCsv = new StatefulBeanToCsvBuilder<ContactDetails>(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
-			ColumnPositionMappingStrategy<ContactDetails> mappingStrategy= new ColumnPositionMappingStrategy<ContactDetails>();
-			mappingStrategy.setType(ContactDetails.class);
-			String []columns = new String[] {"firstName","lastName","address","city","state","zip","phoneNumber","email"};
-			mappingStrategy.setColumnMapping(columns);
-		
-			System.out.println(addressBook);
-			beanToCsv.write(addressBook);
-			writer.close();
-		}catch(Exception exception) {
-			System.out.println("Exception occured while writing");
+		Map<Integer,Boolean> contactCsvWriteStatus = new HashMap<>();
+		boolean[] retu = new boolean[1];
+		retu[0] = false;
+		Runnable task = () -> { 
+			try {
+				Path path = Paths.get("F:/demo/demo.csv");
+				if(!Files.exists(path)) {
+					contactCsvWriteStatus.put(addressBook.hashCode(), true);
+					retu[0] = false;
+					return;
+				}
+				Writer writer = Files.newBufferedWriter(path);
+				StatefulBeanToCsv<ContactDetails> beanToCsv = new StatefulBeanToCsvBuilder<ContactDetails>(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
+				ColumnPositionMappingStrategy<ContactDetails> mappingStrategy= new ColumnPositionMappingStrategy<ContactDetails>();
+				mappingStrategy.setType(ContactDetails.class);
+				String []columns = new String[] {"firstName","lastName","address","city","state","zip","phoneNumber","email"};
+				mappingStrategy.setColumnMapping(columns);
+				contactCsvWriteStatus.put(addressBook.hashCode(), false);
+				beanToCsv.write(addressBook);
+				writer.close();
+				contactCsvWriteStatus.put(addressBook.hashCode(), true);
+				retu[0] = true;
+			}catch(Exception exception) {
+				System.out.println("Exception occured while writing " + exception.getMessage());
+				
+			}
+		};
+		Thread thread = new Thread(task,String.valueOf(addressBook.hashCode())); 
+		thread.start();
+		while(contactCsvWriteStatus.size() < 1 || contactCsvWriteStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				System.out.println("Error while waiting for thread to finish in writeToCSV " + e.getMessage());
+			}
 		}
-		return true;
+		return retu[0];
 	}
 
 	public static boolean readFromCSV() {
