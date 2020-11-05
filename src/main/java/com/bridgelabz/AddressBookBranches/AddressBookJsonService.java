@@ -107,4 +107,8 @@ public class AddressBookJsonService {
 				.put("/AddressBook/update/"+id);
 		return response;
 	}
+	public Response deleteContactFromJsonServer(int id) {
+		Response response = RestAssured.delete("/AddressBook/delete/"+id);
+		return response;
+	}
 }

@@ -9,12 +9,12 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.bridgelabz.AddressBookBranches.AddressBookJsonService;
 import com.bridgelabz.AddressBookBranches.ContactDetails;
-
 import io.restassured.response.Response;
 
 /**
@@ -71,6 +71,17 @@ public class AddressbookJsonTest {
 		response.then().body("address", Matchers.is("302"));
 		response.then().body("first_name", Matchers.is("Imran"));
 		response.then().body("state",Matchers.is("Haryana"));
+	}
+	
+	@Test
+	public void deleteContactFromJsonServerTest() {
+		AddressBookJsonService aService = AddressBookJsonService.getInstance();
+		Response response = aService.deleteContactFromJsonServer(2);
+		String responseAsString = response.asString();
+		int status = response.getStatusCode();
+		assertThat(status, CoreMatchers.is(200));
+		response = aService.getList().get(0);
+		response.then().body("id", Matchers.not(2));
 	}
 	
 }
