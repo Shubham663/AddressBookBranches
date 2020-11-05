@@ -49,7 +49,7 @@ public class AddressBookJsonService {
 		}
 		return responses;
 	}
-	public Response addContactToServer(ContactDetails contactDetails) {
+	public synchronized Response addContactToServer(ContactDetails contactDetails) {
 		Response response = RestAssured.given()
 				.contentType(ContentType.JSON)
 				.accept(ContentType.JSON)
