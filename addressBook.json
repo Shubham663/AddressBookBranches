@@ -12,17 +12,6 @@
       "id": 1
     },
     {
-      "first_name": "Aamir",
-      "last_name": "Khan",
-      "address": "302",
-      "city": "Rohtak",
-      "state": "Haryana",
-      "zip": 110038,
-      "phoneNumber": "9876983450",
-      "email": "ak@gmail.com",
-      "id": 2
-    },
-    {
       "first_name": "Salman",
       "last_name": "Khan",
       "address": "305",
