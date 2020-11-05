@@ -1,0 +1,14 @@
+{
+	"AddressBook":[
+		{
+			"first_name": "Lisa",
+			"last_name" : "Sharma",
+			"address" : "36/Sector-96",
+			"city" : "Jhajjar",
+			"state" : "Haryana",
+			"zip" : 12,
+			"phoneNumber" : "9879876587",
+			"email" : "lisa@gmail.com"
+		}
+	]
+}

@@ -97,15 +97,15 @@ public class AddressBookTest {
     {
 		listContactDetails = payDataService.getListFromDatabase(connection);
 		System.out.println(listContactDetails);
-        assertEquals(6, listContactDetails.size(),0);
+        assertEquals(10, listContactDetails.size(),0);
     }
 	
 	@Test
     public void getUpdateDataInDatabaseAndAddressbook() throws JDBCException
     {
 		listContactDetails = payDataService.getListFromDatabase(connection);
-		listContactDetails.get(0).setAddress("Rewadi");
-		payDataService.updateDetailsPrepared(connection,"address","Rewadi",listContactDetails.get(0).getFirstName());
+		listContactDetails.get(0).setAddress("33/Secotr-53");
+		payDataService.updateDetailsPrepared(connection,"address","33/Secotr-53",listContactDetails.get(0).getFirstName());
 		List<ContactDetails> list = payDataService.getListFromDatabase(connection);
 		String address = null;
 		for(ContactDetails contactDetails : list) {
@@ -113,7 +113,7 @@ public class AddressBookTest {
 				address = contactDetails.getAddress();
 			}
 		}
-        assertEquals("Rewadi", address);
+        assertEquals("33/Secotr-53", address);
     }
 	
 	@Test
@@ -129,14 +129,14 @@ public class AddressBookTest {
     public void getContactsInCity() throws JDBCException
     {
 		listContactDetails = payDataService.getCityContacts(connection,"Gurugram");
-        assertEquals(3, listContactDetails.size());
+        assertEquals(6, listContactDetails.size());
     }
 	
 	@Test
     public void getContactsInState() throws JDBCException
     {
 		listContactDetails = payDataService.getStateContacts(connection,"Haryana");
-        assertEquals(5, listContactDetails.size());
+        assertEquals(8, listContactDetails.size());
     }
 	
 	@Test
@@ -144,7 +144,7 @@ public class AddressBookTest {
     {
 		listContactDetails = payDataService.getListFromDatabase(connection);
 		int initial = listContactDetails.size();
-		ContactDetails contactDetails = new ContactDetails("Shahrukh","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "sk@gmail.com");
+		ContactDetails contactDetails = new ContactDetails("amit23","Khan", "302", "Rohtak", "Haryana", 110038, "9876983450", "sk@gmail.com");
 		payDataService.addContact(connection,contactDetails);
 		listContactDetails = payDataService.getListFromDatabase(connection);
 		assertEquals((initial+1), listContactDetails.size());
