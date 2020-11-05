@@ -54,6 +54,11 @@ public class AddressbookJsonTest {
 		AddressBookJsonService aService = AddressBookJsonService.getInstance();
 		Boolean boolean1 = aService.addMultipleContactsToJsonServer(list);
 		assertThat("Contacts not added", true, Matchers.is(true));
+		Response response = aService.getList().get(0);
+		String responseAsString = response.asString();
+		response.then().body("first_name", Matchers.hasItems("Aamir","Salman"));
+		response.then().body("city", Matchers.hasItems("Rohtak"));
+		response.then().body("zip",Matchers.hasItem(110038));
 	}
 	
 }
