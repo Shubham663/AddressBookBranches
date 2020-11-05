@@ -1,7 +1,7 @@
 {
 	"/AddressBook/list" : "/AddressBook",
-	"/AddressBook/get/:first name" : "/AddressBook/:first name",
+	"/AddressBook/get/:first_name" : "/AddressBook/:first_name",
 	"/AddressBook/create" : "/AddressBook",
-	"/AddressBook/update/:first name" : "/AddressBook/:first name",
-	"/AddressBook/delete/:first name" : "/AddressBook/:first name"
+	"/AddressBook/update/:first_name" : "/AddressBook/:first_name",
+	"/AddressBook/delete/:first_name" : "/AddressBook/:first_name"
 }
