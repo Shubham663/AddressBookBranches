@@ -1,5 +1,13 @@
 package com.bridgelabz.AddressBookBranches;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -11,18 +19,35 @@ import io.restassured.response.Response;
  */
 public class AddressBookJsonService {
 	private static AddressBookJsonService addressBookJsonService;
+	Logger logger = LogManager.getLogger();
 	private AddressBookJsonService() {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = 3000;
+		logger = LogManager.getLogger();
 	}
 	public static AddressBookJsonService getInstance() {
 		if(addressBookJsonService == null)
 			addressBookJsonService = new AddressBookJsonService();
 		return addressBookJsonService;
 	}
-	public Response getList() {
-		Response response = RestAssured.get("/AddressBook/list");
-		return response;
+	public List<Response> getList() {
+		List<Response> responses = new ArrayList<>();
+		Map<Integer,Boolean> contactAddStatus = new HashMap<>();
+		Runnable task  =() -> {
+			contactAddStatus.put(1, false);
+			responses.add(RestAssured.get("/AddressBook/list"));
+			contactAddStatus.put(1,true);
+		};
+		Thread thread = new Thread(task,"getList");
+		thread.start();
+		while(contactAddStatus.containsValue(false) || responses.size() < 1) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				logger.error("Error while waiting for threads to finish in getList " + e.getMessage());
+			}
+		}
+		return responses;
 	}
 	public Response addContactToServer(ContactDetails contactDetails) {
 		Response response = RestAssured.given()

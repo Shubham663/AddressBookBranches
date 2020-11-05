@@ -20,7 +20,7 @@ public class AddressbookJsonTest {
 	@Test
 	public void readListTest() {
 		AddressBookJsonService addressBookJsonService = AddressBookJsonService.getInstance();
-		Response response = addressBookJsonService.getList();
+		Response response = addressBookJsonService.getList().get(0);
 		String responseAsString = response.asString();
 		response.then().body("first_name", Matchers.hasItems("Lisa"));
 		response.then().body("city", Matchers.hasItems("Jhajjar"));

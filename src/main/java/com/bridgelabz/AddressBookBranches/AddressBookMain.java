@@ -7,12 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -478,45 +480,84 @@ public class AddressBookMain {
 	}
 
 	public static boolean writeToFile(String filePath) {
+		boolean []returnVal = new boolean[1];
+		returnVal[0]=false;
 		Enumeration<String> keys = nameToAddressBook.keys();
+		Path path = Paths.get(filePath);
+		if (!Files.exists(path))
+			return false;
+		Map<Integer, Boolean> contactsWriteStatus = new HashMap<>();
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			AddressBookMain addressBook = nameToAddressBook.get(key);
-			for (int i = 0; i < addressBook.contactBook.size(); i++) {
-				Path path = Paths.get(filePath);
-				if (!Files.exists(path))
-					return false;
-				try {
-					Files.write(path, (addressBook.contactBook.get(i).toString()).getBytes(),
-							StandardOpenOption.APPEND);
-					return true;
-				} catch (IOException e) {
-					System.out.println("The file was not found");
+			Runnable task = () -> {
+				contactsWriteStatus.put(addressBook.hashCode(), false);
+				for (int i = 0; i < addressBook.contactBook.size(); i++) {
+					try {
+						Files.write(path, (addressBook.contactBook.get(i).toString()).getBytes(),
+								StandardOpenOption.APPEND);
+					} catch (IOException e) {
+						System.out.println("Error while writing to the file " + e.getMessage());
+					}
 				}
+				contactsWriteStatus.put(addressBook.hashCode(), true);
+			};
+			Thread thread = new Thread(task,addressBook.getName());
+			thread.start();
+		}
+		while(contactsWriteStatus.size() < nameToAddressBook.size() || contactsWriteStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				System.out.println("Error while waiting for other threads to finish");
 			}
 		}
-		return false;
+		returnVal[0] = true;
+		return returnVal[0];
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(contactBook,nameToAddressBook,nameToContact,name);
 	}
 
 	public static List<ContactDetails> readFromFile(String filePath) {
 		Path path = Paths.get(filePath);
+		if (!Files.exists(path))
+			return null;
+		Map<Integer,Boolean> contactFetchStatus = new HashMap<>();
 		List<ContactDetails> addressBook = new ArrayList<>();
+		int []val = new int[1];
+		val[0]=0;
 		try {
 			String fileContent = new String(Files.readAllBytes(path));
-			String[] contacts = fileContent.split("\n");
-			for (String contact : contacts) {
-				String[] details = contact.split(",");
-				String firstName = details[0].split(":")[1];
-				String lastName = details[1].split(":")[1];
-				String address = details[2].split(":")[1];
-				String city = details[3].split(":")[1];
-				String state = details[4].split(":")[1];
-				int zip = Integer.parseInt(details[5].split(":")[1]);
-				String phoneNumber = details[6].split(":")[1];
-				String email = details[7].split(":")[1];
-				addressBook.add(new ContactDetails(firstName, lastName, address, city, state, zip, phoneNumber, email));
+			List<String> contacts = Arrays.asList(fileContent.split("\n"));
+			contacts.forEach(contact ->{
+				Runnable task = () -> {
+					contactFetchStatus.put(contact.hashCode(), false);
+					String[] details = contact.split(",");
+					String firstName = details[0].split(":")[1];
+					String lastName = details[1].split(":")[1];
+					String address = details[2].split(":")[1];
+					String city = details[3].split(":")[1];
+					String state = details[4].split(":")[1];
+					int zip = Integer.parseInt(details[5].split(":")[1]);
+					String phoneNumber = details[6].split(":")[1];
+					String email = details[7].split(":")[1];
+					addressBook.add(new ContactDetails(firstName, lastName, address, city, state, zip, phoneNumber, email));
+					contactFetchStatus.put(contact.hashCode(), true);
+				};
+				Thread thread = new Thread(task,String.valueOf(val[0]++));
+				thread.start();
+			});
+			while( contactFetchStatus.size() < contacts.size() || contactFetchStatus.containsValue(false)) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					System.out.println("Error while waiting for threads to finish " + e.getMessage());
+				}
 			}
-			System.out.println(addressBook);
+//			System.out.println(addressBook);
 			return addressBook;
 		} catch (IOException e) {
 			System.out.println("The mentioned directory was not found");
