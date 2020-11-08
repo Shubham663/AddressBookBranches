@@ -97,23 +97,18 @@ public class AddressBookTest {
     {
 		listContactDetails = payDataService.getListFromDatabase(connection);
 		System.out.println(listContactDetails);
-        assertEquals(10, listContactDetails.size(),0);
+        assertEquals(11, listContactDetails.size(),0);
     }
 	
 	@Test
     public void getUpdateDataInDatabaseAndAddressbook() throws JDBCException
     {
-		listContactDetails = payDataService.getListFromDatabase(connection);
-		listContactDetails.get(0).setAddress("33/Secotr-53");
-		payDataService.updateDetailsPrepared(connection,"address","33/Secotr-53",listContactDetails.get(0).getFirstName());
-		List<ContactDetails> list = payDataService.getListFromDatabase(connection);
-		String address = null;
-		for(ContactDetails contactDetails : list) {
-			if(contactDetails.getFirstName().equals(listContactDetails.get(0).getFirstName())) {
-				address = contactDetails.getAddress();
-			}
-		}
-        assertEquals("33/Secotr-53", address);
+		try {
+		int noOfRecordsAffected =  payDataService.updateDetailsPrepared(connection,"35/Secotr-53","Surakshit");
+        assertEquals(1, noOfRecordsAffected,0);
+        }catch(JDBCException exception) {
+        	assertEquals("No record found with the first name Surakshit", exception.getMessage());
+        }
     }
 	
 	@Test
@@ -129,14 +124,14 @@ public class AddressBookTest {
     public void getContactsInCity() throws JDBCException
     {
 		listContactDetails = payDataService.getCityContacts(connection,"Gurugram");
-        assertEquals(6, listContactDetails.size());
+        assertEquals(7, listContactDetails.size());
     }
 	
 	@Test
     public void getContactsInState() throws JDBCException
     {
 		listContactDetails = payDataService.getStateContacts(connection,"Haryana");
-        assertEquals(8, listContactDetails.size());
+        assertEquals(9, listContactDetails.size());
     }
 	
 	@Test

@@ -83,32 +83,12 @@ public class PayrollDatabaseService {
 		List<ContactDetails> listContactDetails = null;
 		try {
 			connection.setAutoCommit(false);
-			preparedStatement = connection.prepareStatement("select * from contacts");
-			result = preparedStatement.executeQuery();			
-			listContactDetails = new ArrayList<>();
-			while (result.next()) {
-				ContactDetails contactDetails = new ContactDetails();
-				contactDetails.setFirstName(result.getString(1));
-				contactDetails.setAddress(result.getString(2));
-				contactDetails.setLastName(result.getString(5));
-				contactDetails.setEmail(result.getString(4));
-				long phoneNumber = (long)result.getDouble(3);
-				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
-				listContactDetails.add(contactDetails);
-			}
-			preparedStatement = connection.prepareStatement("select c.first_name,zip_code,city,state from contacts as c,contacts_address as cd,address as a where c.first_name = cd.first_name and cd.zip = a.zip_code");
-			result = preparedStatement.executeQuery();			
-			while (result.next()) {
-				String firstName = result.getString(1);
-				for(ContactDetails cd:listContactDetails) {
-					if(cd.getFirstName().equals(firstName)) {
-						cd.setZip((int)result.getDouble(2));
-						cd.setCity(result.getString(3));
-						cd.setState(result.getString(4));
-						break;
-					}
-				}
-			}
+			preparedStatement = connection.prepareStatement(
+					"select c.first_name,c.last_name,c.address,c.phone_number,c.email,a.zip_code,a.city,a.state from"
+					+ " contacts as c, address as a,contacts_address as ca where c.first_name = ca.first_name"
+					+ " and ca.zip = a.zip_code;");
+			result = preparedStatement.executeQuery();
+			listContactDetails = getListFromResultSet(result);
 			connection.commit();
 			connection.setAutoCommit(true);
 			logger.info("List successfully retrieved from database");
@@ -126,20 +106,40 @@ public class PayrollDatabaseService {
 		return listContactDetails;
 	}
 
-	public void updateDetailsPrepared(Connection connection,String field,String value,String record) throws JDBCException {
+	private List<ContactDetails> getListFromResultSet(ResultSet result) throws SQLException {
+		List<ContactDetails> listContactDetails = new ArrayList<>();
+		while (result.next()) {
+			ContactDetails contactDetails = new ContactDetails();
+			contactDetails.setFirstName(result.getString(1));
+			contactDetails.setAddress(result.getString(3));
+			contactDetails.setLastName(result.getString(2));
+			contactDetails.setEmail(result.getString(5));
+			long phoneNumber = (long)result.getDouble(4);
+			contactDetails.setPhoneNumber(Long.toString(phoneNumber));
+			contactDetails.setZip((int)result.getDouble(6));
+			contactDetails.setCity(result.getString(7));
+			contactDetails.setState(result.getString(8));
+			listContactDetails.add(contactDetails);
+		}
+		return listContactDetails;
+	}
+
+	public int updateDetailsPrepared(Connection connection,String value,String record) throws JDBCException {
+		int recordsAffected = 0;
 		try {
 			connection.setAutoCommit(false);
 			preparedStatement = connection.prepareStatement("Update contacts set address = ? where first_name = ?");
-//			preparedStatement.setString(1, field);
 			preparedStatement.setString(1, value);
 			preparedStatement.setString(2, record);
-			preparedStatement.execute();
+			recordsAffected = preparedStatement.executeUpdate();
+			if(recordsAffected == 0)
+				throw new JDBCException("No record found with the first name " + record);
 			connection.commit();
 			connection.setAutoCommit(true);
-//			preparedStatement.close();
 		} catch (SQLException exception) {
 			throw new JDBCException("Error while updating with prepared Statement " + exception.getMessage());
 		}
+		return recordsAffected;
 	}
 
 	public List<ContactDetails> getDateRange(Connection connection, Date date1, Date date2) throws JDBCException {
@@ -148,37 +148,13 @@ public class PayrollDatabaseService {
 		try {
 			connection.setAutoCommit(false);
 			preparedStatement = connection.prepareStatement(
-					"Select * from contacts where date_added between cast(? as date) and cast(? as date)");
+					"select c.first_name,c.last_name,c.address,c.phone_number,c.email,a.zip_code,a.city,a.state from"
+					+ " contacts as c, address as a,contacts_address as ca where c.first_name = ca.first_name"
+					+ " and ca.zip = a.zip_code and date_added between cast(? as date) and cast(? as date);");
 			preparedStatement.setDate(1, date1);
 			preparedStatement.setDate(2, date2);
 			result = preparedStatement.executeQuery();
-			listContactDetails = new ArrayList<>();
-			while (result.next()) {
-				ContactDetails contactDetails = new ContactDetails();
-				contactDetails.setFirstName(result.getString(1));
-				contactDetails.setAddress(result.getString(2));
-				contactDetails.setLastName(result.getString(5));
-				contactDetails.setEmail(result.getString(4));
-				long phoneNumber = (long)result.getDouble(3);
-				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
-				listContactDetails.add(contactDetails);
-			}
-			preparedStatement = connection.prepareStatement("select c.first_name,zip_code,city,state from contacts as c,contacts_address as cd,address as a where c.first_name = cd.first_name and cd.zip = a.zip_code and c.date_added between cast(? as date) and cast(? as date)");
-			preparedStatement.setDate(1, date1);
-			preparedStatement.setDate(2, date2);
-			result = preparedStatement.executeQuery();			
-			while (result.next()) {
-				String firstName = result.getString(1);
-				for(ContactDetails cd:listContactDetails) {
-					if(cd.getFirstName().equals(firstName)) {
-//						System.out.println(firstName);
-						cd.setZip((int)result.getDouble(2));
-						cd.setCity(result.getString(3));
-						cd.setState(result.getString(4));
-						break;
-					}
-				}
-			}
+			listContactDetails = getListFromResultSet(result);
 			connection.commit();
 			connection.setAutoCommit(true);
 			logger.info("List successfully retrieved from database");
@@ -207,20 +183,7 @@ public class PayrollDatabaseService {
 					+ " and ca.zip = a.zip_code;");
 			preparedStatement.setString(1, city);
 			result = preparedStatement.executeQuery();
-			listContactDetails = new ArrayList<>();
-			while (result.next()) {
-				ContactDetails contactDetails = new ContactDetails();
-				contactDetails.setFirstName(result.getString(1));
-				contactDetails.setAddress(result.getString(3));
-				contactDetails.setLastName(result.getString(2));
-				contactDetails.setEmail(result.getString(5));
-				long phoneNumber = (long)result.getDouble(4);
-				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
-				contactDetails.setZip((int)result.getDouble(6));
-				contactDetails.setCity(result.getString(7));
-				contactDetails.setState(result.getString(8));
-				listContactDetails.add(contactDetails);
-			}
+			listContactDetails = getListFromResultSet(result);
 			connection.commit();
 			connection.setAutoCommit(true);
 			logger.info("List successfully retrieved from database");
@@ -249,20 +212,7 @@ public class PayrollDatabaseService {
 					+ " and ca.zip = a.zip_code;");
 			preparedStatement.setString(1, state);
 			result = preparedStatement.executeQuery();
-			listContactDetails = new ArrayList<>();
-			while (result.next()) {
-				ContactDetails contactDetails = new ContactDetails();
-				contactDetails.setFirstName(result.getString(1));
-				contactDetails.setAddress(result.getString(3));
-				contactDetails.setLastName(result.getString(2));
-				contactDetails.setEmail(result.getString(5));
-				long phoneNumber = (long)result.getDouble(4);
-				contactDetails.setPhoneNumber(Long.toString(phoneNumber));
-				contactDetails.setZip((int)result.getDouble(6));
-				contactDetails.setCity(result.getString(7));
-				contactDetails.setState(result.getString(8));
-				listContactDetails.add(contactDetails);
-			}
+			listContactDetails = getListFromResultSet(result);
 			connection.commit();
 			connection.setAutoCommit(true);
 			logger.info("List successfully retrieved from database");
